@@ -10,20 +10,41 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('full_name')->nullable()->after('name');
-            $table->string('username')->nullable()->unique()->after('full_name');
-            $table->enum('role', ['admin', 'staff'])->default('staff')->after('password');
-            $table->enum('status', ['Active', 'Deactivated'])->default('Active')->after('role');
-            $table->timestamp('last_login')->nullable()->after('status');
+			
+			if (!Schema::hasColumn('users', 'full_name')) {
+				$table->string('full_name')->nullable()->after('name');
+			}
+			
+			if (!Schema::hasColumn('users', 'username')) {
+				$table->string('username')->nullable()->unique()->after('full_name');
+			}
+			
+			// Encountered an error during migrate
+			if (!Schema::hasColumn('users', 'role')) {
+				$table->enum('role', ['admin', 'staff'])
+					  ->default('staff')
+					  ->after('password');
+			}
+	
+				// Encountered an error during migrate
+			if (!Schema::hasColumn('users', 'status')) {
+				$table->enum('status', ['Active', 'Deactivated'])->default('Active')->after('role');
+			}
+			
+			if (!Schema::hasColumn('users', 'last_login')) {
+				$table->timestamp('last_login')->nullable()->after('status');
+			}
         });
 
-        DB::table('users')
-            ->whereNull('full_name')
-            ->update(['full_name' => DB::raw('name')]);
+		DB::table('users')
+			->whereNull('full_name')
+			->update(['full_name' => DB::raw('name')]);
 
         DB::table('users')
             ->whereNull('username')
-            ->update(['username' => DB::raw("SUBSTRING_INDEX(email, '@', 1)")]);
+			->update([
+					'username' => DB::raw("substr(email, 1, instr(email, '@') - 1)")
+				]);
     }
 
     public function down(): void
