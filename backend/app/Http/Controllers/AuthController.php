@@ -21,7 +21,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid username or password'], 422);
         }
 
-        if ($user->status !== 'Active') {
+        if (strtolower($user->status) !== 'active') {
             return response()->json(['message' => 'This account is deactivated'], 403);
         }
 
