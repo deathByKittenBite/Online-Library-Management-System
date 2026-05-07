@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@local.library',
             'password' => 'admin123',
             'role' => 'admin',
-            'status' => 'Active',
+            'status' => 'active',
         ]);
 
         User::updateOrCreate([
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'staff@local.library',
             'password' => 'staff123',
             'role' => 'staff',
-            'status' => 'Active',
+            'status' => 'active',
         ]);
     }
 }
